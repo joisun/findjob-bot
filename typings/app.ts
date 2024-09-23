@@ -1,0 +1,1 @@
+export type LoggerType = 'info' | 'warn' | 'error'

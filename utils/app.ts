@@ -1,3 +1,4 @@
+import { LoggerType } from "@/typings/app"
 import { additionalPrompt, resumeCache } from "@/utils/storage"
 export function getSystemPrompt() {
     return `Please analyze the user-provided resume information and the job description to assess how well the user matches the job. Focus on key factors like job title, required skills, education, years of experience, and other relevant details. Based on the analysis, write a polite and conversational job application greeting that the user can send directly to the employer. Mention specific skills or qualifications from the job requirements, explaining how the user’s resume aligns with those points. Avoid any language that would suggest the greeting is AI-generated or written by someone else. Keep the tone professional, confident, and friendly, in the first-person perspective of the job seeker. The greeting should be written in Chinese.`
@@ -24,7 +25,7 @@ ${jd}
 
 简历: 
 -------
-${getResume()}
+${await getResume()}
 `
 }
 
@@ -38,7 +39,7 @@ ${jbbaseinfo}
 
 简历: 
 ------
-${getResume()}
+${await getResume()}
     `
 }
 
@@ -47,25 +48,28 @@ export function convertMsgToBool(msg: string) {
 }
 
 
-export function notice(msg: string) {
-    const message = `findjob-bot: ${msg}`
-    console.warn(message)
-    sendLog({
-        message,
-        type: 'warn'
-    })
-}
-
-export function log(msg: string) {
+export function log(msg: string, type: LoggerType = 'info') {
     const message = `findjob-bot: ${msg}`
     sendLog({
         message,
-        type: 'info'
+        type: type
     })
-    console.log(`findjob-bot: ${msg}`)
+    switch (type) {
+        case 'error':
+            console.error(message)
+            break;
+        case 'info':
+            console.log(message)
+            break;
+        case "warn":
+            console.warn(message)
+            break;
+        default:
+            break;
+    }
 }
 
-function sendLog(msg: { message: string, type: 'warn' | 'info' | 'error' }) {
+function sendLog(msg: { message: string, type: LoggerType }) {
     browser.runtime.sendMessage({
         type: 'findjob-bot-logger',
         data: msg

@@ -1,4 +1,4 @@
-import { notice } from "@/utils/app";
+import { log } from "@/utils/app";
 import { sleep } from "@/utils/common";
 import { getJobBaseInfo, getJobDescription, getConcatBtn, fillInputField, goTo } from "@/utils/domRelated";
 
@@ -66,7 +66,7 @@ async function clickPreference() {
   if (preference) {
     preference.click()
   } else {
-    notice(`【目标意向工作项】未找到, 将直接从推荐职位列表中找寻工作机会！`)
+    log(`【目标意向工作项】未找到, 将直接从推荐职位列表中找寻工作机会！`)
   }
 }
 

@@ -3,10 +3,11 @@ import cohere from "@/aiModels/cohere";
 import openai from "@/aiModels/openai";
 import kimi from "@/aiModels/kimi";
 import { sleep } from "@/utils/common";
-import { notice } from "@/utils/app";
+import { log } from "@/utils/app";
 import { storage } from 'wxt/storage';
-import chatanywhere from "@/aiModels/chatanywhere";
 import { jobListItemIndex } from "@/utils/storage"
+import { AiApiAdaptor } from "@/aiModels";
+import { chatanywhereAIService } from "@/aiModels/chatanywhere";
 
 const xunfeiAPILite = 'ZKjFMdRTavVPDUABbwvf:hratmjKhQzyVNuArxvzm'
 const xunfeiAPIV3pro = 'MTrricoschHlfxWNvIJD:ZXklDofIqPdoBxkWsjTA'
@@ -17,6 +18,7 @@ const openAiKey = "sk-IjXDututkGHzTVcw77BfB735565d46Db84Cb67804fF1E83b"
 const kimiApiKey = "sk-PT9aRZnfqpilMASfDj5HsePrYp5WfTakY4wQtwqpODKaSwUy"
 const chatanywhereApiKey = "sk-M72D5lilVXr4dKsWwPJgs8PRzvnLQleW0UrpBKdjjm7hHWWL"
 let stopTag = false
+let AI: AiApiAdaptor | null = null;
 export default defineBackground(() => {
   console.log('Hello background!', { id: browser.runtime.id });
 
@@ -55,10 +57,20 @@ export default defineBackground(() => {
       }
     }
   });
+
+  initAiApiAdaptor()
 });
+
+function initAiApiAdaptor() {
+  AI = new AiApiAdaptor([
+    new chatanywhereAIService(chatanywhereApiKey, ['gpt-4o-mini']),
+  ])
+}
 
 async function zhipin(senderId?: number) {
   console.log('Hello background.zhipin!');
+  // 检查 AI Adaptor 的初始化
+  if (!AI) { initAiApiAdaptor() }
   if (!senderId) return;
   // 尝试点击 工作意向偏好
 
@@ -74,19 +86,19 @@ async function zhipin(senderId?: number) {
     await sleep(1000);// 等待点击事件
     const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
     const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
-    if (!jobDescription || !jobBaseInfo) { notice('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！'); continue };
+    if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！'); continue };
 
 
     //  fix 掉了while 循环的问题， 接下来，处理ai 的操作，1.prompt 调教，2.ai adaptor
     const ifMatchBaseInfo = await checkIfMatchBaseJobInfo(jobBaseInfo)
-    if (!ifMatchBaseInfo) { notice('不符合岗位基本描述！为你找下一个招聘信息~'); continue }
+    if (!ifMatchBaseInfo) { log('不符合岗位基本描述！为你找下一个招聘信息~'); continue }
 
     log('基本岗位信息符合，将为你生成对应的招呼语！')
 
     // await sleep(3000);// 有的 api(kimi) 要求请求间隔超过1s
     const msgOrFalse = await generateHelloMessage(jobDescription)
 
-    if (!msgOrFalse) { notice('不符合职位描述！为你找下一个招聘信息~'); continue }
+    if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~'); continue }
 
     log(msgOrFalse)
 
@@ -103,14 +115,17 @@ async function zhipin(senderId?: number) {
 
 }
 async function checkIfMatchBaseJobInfo(jobBaseInfo: string) {
+  if (!AI) { return; }
   const checkBaseInfoMatch = await generateBaseInfoCheckMessage(jobBaseInfo)
-  const _ifMatch = await chatanywhere(chatanywhereApiKey, checkBaseInfoMatch);
+  const _ifMatch = await AI.chat(checkBaseInfoMatch);
   return convertMsgToBool(_ifMatch)
 }
 
 async function generateHelloMessage(jobDescription: string) {
+  if (!AI) { return; }
+
   const inputMsg = await generateInputMessage(jobDescription)
-  const _ifMatch = await chatanywhere(chatanywhereApiKey, inputMsg);
+  const _ifMatch = await AI.chat(inputMsg);
   return _ifMatch.includes('false') ? false : _ifMatch
 }
 

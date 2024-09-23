@@ -1,3 +1,5 @@
+import { AiModelApiKeys } from "@/typings/aiModelAdaptor";
+
 // utils/storage.ts
 export const jobListItemIndex = storage.defineItem<number>(
     'local:jobListItemIndex',
@@ -40,11 +42,8 @@ export const greetingWordsLimit = storage.defineItem<number>(
         fallback: 100,
     },
 );
-export type AiModelApiKey = {
-    name: string,
-    apiKeys: string
-}
-export type AiModelApiKeys = AiModelApiKey[]
+
+
 
 export const aiModelApiKeys = storage.defineItem<AiModelApiKeys>(
     'local:greetingWordsLimit',

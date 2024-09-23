@@ -41,5 +41,7 @@
 
   }
   .error{
-    color: red;
+    color: rgb(255, 52, 52);
+    background-color: rgba(255, 52, 52, 0.185);
+
   }

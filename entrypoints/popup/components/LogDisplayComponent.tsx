@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './LogDisplayComponent.module.css';
+import { LoggerType } from '@/typings/app';
 
 const LogDisplayComponent = () => {
-  const [logs, setLogs] = useState<{ message: string, type: 'info' | 'warn' | 'error' }[]>([]);
+  const [logs, setLogs] = useState<{ message: string, type: LoggerType }[]>([]);
   const logContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

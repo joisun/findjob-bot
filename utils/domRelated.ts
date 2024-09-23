@@ -1,4 +1,4 @@
-import { notice } from "./app";
+import { log } from "./app";
 import { sleep } from "./common";
 export function waitForElement(selector: string): Promise<HTMLElement> {
   return new Promise((resolve, reject) => {
@@ -126,7 +126,7 @@ export async function getConcatBtn() {
 
 export async function fillInputField(textContent: string) {
   const inputTextField = await waitForElement(".chat-input") as HTMLElement | null
-  if (!inputTextField) { notice("定位输入框失败!"); return }
+  if (!inputTextField) { log("定位输入框失败!"); return }
   inputTextField.focus()
   inputTextField.innerText = textContent
 
