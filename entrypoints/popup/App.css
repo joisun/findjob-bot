@@ -1,0 +1,39 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+  height: 100vh;
+}
+
+#root-container {
+  padding: 1rem;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.logo {
+  height: 1em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #54bc4ae0);
+}
+.go-btn{
+  background-color: #646cff;
+}
+.go-btn:hover{
+  background-color: #535bf2;
+}
+
+.card {
+  /* padding: 2em; */
+  width: 500px;
+}
+
+.read-the-docs {
+  color: #888;
+}
