@@ -74,6 +74,7 @@ async function selectJobFromList(index: number) {
   // const targetJobListItem = await waitForElement(`.rec-job-list > li:nth-child(${index})`) as HTMLElement | null
   const targetJobListItem = document.querySelector(`.rec-job-list > li:nth-child(${index})`) as HTMLElement | null
   if (targetJobListItem) {
+    targetJobListItem.scrollIntoView()
     targetJobListItem.click()
   } else {
     // 检查是不是最后一个，如果是的，则尝试翻页

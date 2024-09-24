@@ -1,4 +1,4 @@
-import { AiModelApiKeys } from "@/typings/aiModelAdaptor";
+import { AiAgentApiKeys } from "@/typings/aiModelAdaptor";
 
 // utils/storage.ts
 export const jobListItemIndex = storage.defineItem<number>(
@@ -26,7 +26,12 @@ export const resumeCache = storage.defineItem<string>(
     },
 );
 
-
+export const loopLimitStorage = storage.defineItem<number>(
+    'local:loopLimitStorage',
+    {
+        fallback: 5,
+    },
+);
 
 export const additionalPrompt = storage.defineItem<string>(
     'local:additionalPrompt',
@@ -45,9 +50,11 @@ export const greetingWordsLimit = storage.defineItem<number>(
 
 
 
-export const aiModelApiKeys = storage.defineItem<AiModelApiKeys>(
-    'local:greetingWordsLimit',
+export const agentsStorage = storage.defineItem<AiAgentApiKeys>(
+    'local:agents',
     {
         fallback: [],
     },
 );
+
+

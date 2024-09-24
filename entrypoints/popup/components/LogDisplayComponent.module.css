@@ -37,11 +37,15 @@
   }
   .info{
     color: rgb(13, 186, 255);
-    background-color: rgba(13, 186, 255, 0.192);
+    background-color: rgba(13, 186, 255, 0.089);
 
   }
   .error{
-    color: rgb(255, 52, 52);
-    background-color: rgba(255, 52, 52, 0.185);
+    color: rgb(255, 88, 88);
+    background-color: rgba(255, 52, 52, 0.116);
+  }
 
+  .success{
+    color: rgb(0, 255, 128);
+    background-color: rgba(0, 255, 128, 0.103);
   }

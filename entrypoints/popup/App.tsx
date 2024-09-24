@@ -1,21 +1,31 @@
+import { resumeCache } from "@/utils/storage";
 import { useState } from 'react';
-import reactLogo from '@/assets/react.svg';
-import wxtLogo from '/wxt.svg';
-import ResumeInputComponent from "./components/ResumeInputComponent"
 import './App.css';
-import LogDisplayComponent from './components/LogDisplayComponent';
-import TabSwitcher, { Tabs } from './components/TabSwitcher';
 import AdditionalInputComponent from './components/AdditionalInputComponent';
-import { resumeCache, additionalPrompt,greetingWordsLimit } from "@/utils/storage"
-import GreetingWordsLimitComponent from './components/GreetingWordsLimitComponent';
 import ApiKeysConfigComponent from './components/ApiKeysConfigComponent';
+import GreetingWordsLimitComponent from './components/GreetingWordsLimitComponent';
+import LogDisplayComponent from './components/LogDisplayComponent';
+import LoopLimitComponent from './components/LoopLimitComponent';
+import ResumeInputComponent from "./components/ResumeInputComponent";
+import TabSwitcher, { Tabs } from './components/TabSwitcher';
+import wxtLogo from '/wxt.svg';
 function App() {
 
   const [tab, setTab] = useState(Tabs.main)
+  const [resumeValidate, setResumeValidate] = useState(false);
 
   const handleClickStart = function () {
-    browser.runtime.sendMessage({ from: 'popup', type: "start-bot" });
+    resumeCache.getValue().then((cache) => {
+      if (cache.trim() === '') {
+        setResumeValidate(false)
+        return
+      }else{
+        setResumeValidate(true)
+        browser.runtime.sendMessage({ from: 'popup', type: "start-bot" });
+      }
+    })
   }
+
   const handleClickStop = async function () {
     // const resume = await resumeCache.getValue()
     // const msgOrFalse = await additionalPrompt.getValue()
@@ -29,6 +39,7 @@ function App() {
     <div id='root-container'>
       <h1><span className='flex-center'><img className='logo' src={wxtLogo} alt="" /> Findjob-bot</span>
         <div className='flex-center'>
+          <LoopLimitComponent />
           <button className='go-btn' onClick={handleClickStart}>
             Go!!!
           </button>
@@ -42,15 +53,15 @@ function App() {
       <div className="card">
         {/* tab main */}
         <div style={{ display: tab === Tabs.main ? 'block' : 'none' }}>
-          <ResumeInputComponent />
+          <ResumeInputComponent validate={resumeValidate} />
           <LogDisplayComponent />
         </div>
 
         {/* tab settings */}
         <div style={{ display: tab === Tabs.settings ? 'block' : 'none' }}>
           <AdditionalInputComponent />
-          <GreetingWordsLimitComponent/>
-          <ApiKeysConfigComponent/>
+          <GreetingWordsLimitComponent />
+          <ApiKeysConfigComponent />
         </div>
 
       </div>

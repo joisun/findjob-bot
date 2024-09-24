@@ -41,6 +41,9 @@ export default defineBackground(() => {
       case 'stop-bot':
         stopTag = true
         break;
+      case 'agents-changed':
+        console.log("agents-change")
+        break;
       default:
         break;
     }
@@ -76,9 +79,19 @@ async function zhipin(senderId?: number) {
 
   await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
   let index = await jobListItemIndex.getValue()
-  while (index < 5 && !stopTag) {
-    console.log('index', index)
+  let loopLimit = await loopLimitStorage.getValue() || 1
+  // 避免意外情况导致的死循环
+  let safeloopMax = 10000
+  let safeloopIndex = 0
+  while (index < loopLimit && !stopTag) {
+    safeloopIndex += 1
+    if(safeloopIndex >= safeloopMax){
+      log('意外错误，程序终止...', 'error')
+      return
+    };
+    
     index = await jobListItemIndex.getValue()
+    log(`将进行 [${index}/${loopLimit}] 次招聘信息的检查`)
     await jobListItemIndex.setValue(index + 1)
 
     await sleep(2000)
@@ -86,19 +99,19 @@ async function zhipin(senderId?: number) {
     await sleep(1000);// 等待点击事件
     const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
     const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
-    if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！'); continue };
+    if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！', 'warn'); continue };
 
 
     //  fix 掉了while 循环的问题， 接下来，处理ai 的操作，1.prompt 调教，2.ai adaptor
     const ifMatchBaseInfo = await checkIfMatchBaseJobInfo(jobBaseInfo)
-    if (!ifMatchBaseInfo) { log('不符合岗位基本描述！为你找下一个招聘信息~'); continue }
+    if (!ifMatchBaseInfo) { log('不符合岗位基本描述！为你找下一个招聘信息~', 'warn'); continue }
 
-    log('基本岗位信息符合，将为你生成对应的招呼语！')
+    log('基本岗位信息符合，将为你生成对应的招呼语！', 'success')
 
     // await sleep(3000);// 有的 api(kimi) 要求请求间隔超过1s
     const msgOrFalse = await generateHelloMessage(jobDescription)
 
-    if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~'); continue }
+    if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~', 'warn'); continue }
 
     log(msgOrFalse)
 
@@ -106,7 +119,7 @@ async function zhipin(senderId?: number) {
     await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickContactBtn" });
     await sleep(2000)
     console.log('msgOrFalse', msgOrFalse)
-    // await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: `${msgOrFalse}\n\n-----\n this is a test message. don't mind please. 这是一条测试信息，请忽略。谢谢！` });
+    await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: msgOrFalse });
     await sleep(2000)
     await browser.tabs.sendMessage(senderId, { from: 'background', type: "goBack" });
   }

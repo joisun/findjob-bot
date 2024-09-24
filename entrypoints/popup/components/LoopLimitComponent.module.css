@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  align-items: center;
+  h2{
+    font-size: .5em;
+    white-space: nowrap;
+    margin: 0;
+  }
+  p{
+    text-align: left;
+    font-size: 10px;
+    padding: .4em .2em;
+    background-color: #00000057;
+    width: fit-content;
+    color: #888888;
+  }
+}
+
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  width: 10ch;
+  height: 100%;
+  padding: 8px;
+  border: 1px solid #494949;
+  border-radius: 4px;
+  resize: none;
+  font-family: inherit;
+  font-size: 14px;
+  margin: 0 1ch;
+}
+

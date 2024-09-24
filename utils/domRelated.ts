@@ -126,6 +126,8 @@ export async function getConcatBtn() {
 
 export async function fillInputField(textContent: string) {
   const inputTextField = await waitForElement(".chat-input") as HTMLElement | null
+  const checkIfcontacted = document.querySelector(".item-myself") as HTMLElement | null
+  if(checkIfcontacted) { log("已存在历史沟通， 跳过....", 'warn');  return}
   if (!inputTextField) { log("定位输入框失败!"); return }
   inputTextField.focus()
   inputTextField.innerText = textContent

@@ -1,36 +1,63 @@
+import { AgentsType, AiAgentApiKeys } from '@/typings/aiModelAdaptor';
+import { agentsStorage } from '@/utils/storage';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import styles from './ApiKeysConfigComponent.module.css';
 import { DragSvgIcon } from './icons/dragSvgIcon';
 import { RemoveSvgIcon } from './icons/RemoveSvgIcon';
 
-interface Model {
+interface Agent {
     id: number;
-    name: string;
+    name: AgentsType;
 }
 
-interface ApiKeyConfig {
-    modelName: string;
-    apiKey: string;
-}
 
-const models: Model[] = [
-    { id: 1, name: 'Model A' },
-    { id: 2, name: 'Model B' },
-    { id: 3, name: 'Model C' }
+
+const agents: Agent[] = [
+    { id: 1, name: AgentsType.XunFeiSpark },
+    { id: 2, name: AgentsType.ChatAnywhere },
 ];
 
 const ApiKeysConfigComponent: React.FC = () => {
-    const [selectedModel, setSelectedModel] = useState<number | null>(null);
+    const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
     const [apiKey, setApiKey] = useState<string>('');
-    const [apiKeys, setApiKeys] = useState<ApiKeyConfig[]>([]);
+    const [apiKeys, setApiKeys] = useState<AiAgentApiKeys>([]);
+
+    // 还原设定值
+    useEffect(() => {
+        agentsStorage.getValue().then((value) => {
+            if (value) {
+                setApiKeys(value);
+            }
+        });
+    }, []);
+
+    // 防抖
+    const timer = useRef<any>();
+    useEffect(() => {
+        if (timer.current) {
+            clearTimeout(timer.current)
+        }
+        timer.current = setTimeout(() => {
+            agentsStorage.setValue(apiKeys).then(() => {
+                console.log('apiKeys', apiKeys);
+                browser.runtime.sendMessage({ from: 'popup', type: "agents-changed" });
+            });
+        }, 500)
+
+    }, [apiKeys]);
+
+
+
+
+
 
     const handleAddApiKey = () => {
-        if (selectedModel !== null && apiKey.trim() !== '') {
-            const model = models.find(m => m.id === selectedModel);
-            if (model && !apiKeys.some(item => item.modelName === model.name)) {
-                setApiKeys([...apiKeys, { modelName: model.name, apiKey }]);
-                setSelectedModel(null);
+        if (selectedAgent !== null && apiKey.trim() !== '') {
+            const agent = agents.find(m => m.id === selectedAgent);
+            if (agent && !apiKeys.some(item => item.agentName === agent.name)) {
+                setApiKeys([...apiKeys, { agentName: agent.name, apiKey }]);
+                setSelectedAgent(null);
                 setApiKey('');
             }
         }
@@ -58,12 +85,13 @@ const ApiKeysConfigComponent: React.FC = () => {
     return (
         <div className={styles.container}>
             <h2 className={styles.title}>API 管理</h2>
+            <p>选择 API 提供方，可进行拖拽排序，将优先使用最前的提供方</p>
             <p className={styles.operation}>
-                <select onChange={e => setSelectedModel(Number(e.target.value))} value={selectedModel || ''}>
+                <select onChange={e => setSelectedAgent(Number(e.target.value))} value={selectedAgent || ''}>
                     <option value="" disabled>选择API提供方</option>
-                    {models.map(model => (
-                        <option key={model.id} value={model.id} disabled={apiKeys.some(item => item.modelName === model.name)}>
-                            {model.name}
+                    {agents.map(agent => (
+                        <option key={agent.id} value={agent.id} disabled={apiKeys.some(item => item.agentName === agent.name)}>
+                            {agent.name}
                         </option>
                     ))}
                 </select>
@@ -73,9 +101,9 @@ const ApiKeysConfigComponent: React.FC = () => {
                     value={apiKey}
                     onChange={e => setApiKey(e.target.value)}
                     placeholder="输入 API key"
-                    disabled={selectedModel === null}
+                    disabled={selectedAgent === null}
                 />
-                <button className={styles.button} onClick={handleAddApiKey} disabled={selectedModel === null || apiKey.trim() === ''}>
+                <button className={styles.button} onClick={handleAddApiKey} disabled={selectedAgent === null || apiKey.trim() === ''}>
                     添加
                 </button>
             </p>
@@ -85,7 +113,7 @@ const ApiKeysConfigComponent: React.FC = () => {
                     {(provided) => (
                         <ul {...provided.droppableProps} ref={provided.innerRef} className={styles.list}>
                             {apiKeys.map((item, index) => (
-                                <Draggable key={item.modelName} draggableId={item.modelName} index={index}>
+                                <Draggable key={item.agentName} draggableId={item.agentName} index={index}>
                                     {(provided) => (
                                         <li
                                             ref={provided.innerRef}
@@ -97,9 +125,9 @@ const ApiKeysConfigComponent: React.FC = () => {
                                                 className={styles.dragHandle}
                                                 title="拖拽排序"
                                             >
-                                                <DragSvgIcon className={styles.dragBtn} style={{fontSize: '24px'}}/> {/* 拖拽图标 */}
+                                                <DragSvgIcon className={styles.dragBtn} style={{ fontSize: '24px' }} /> {/* 拖拽图标 */}
                                             </span>
-                                            <label>{item.modelName}</label>
+                                            <label>{item.agentName}</label>
                                             <input
                                                 className={styles.input}
                                                 type="text"
@@ -108,7 +136,7 @@ const ApiKeysConfigComponent: React.FC = () => {
                                                 placeholder="Enter API key"
                                             />
                                             <button className={styles.removeButton} onClick={() => handleRemoveApiKey(index)}>
-                                                <RemoveSvgIcon style={{fontSize: '16px'}}/>
+                                                <RemoveSvgIcon style={{ fontSize: '16px' }} />
                                             </button>
                                         </li>
                                     )}

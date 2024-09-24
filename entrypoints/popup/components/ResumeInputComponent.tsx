@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ResumeInputComponent.module.css';
 import { resumeCache } from '@/utils/storage';
-const TextInputComponent = () => {
+interface TextInputComponentProps {
+  validate: boolean
+}
+const TextInputComponent: React.FC<TextInputComponentProps> = ({ validate }) => {
   const [text, setText] = useState('');
-  useEffect(()=>{
-    resumeCache.getValue().then(cache=>{
+  const [blur, setBlur] = useState(false);
+
+
+
+  useEffect(() => {
+    resumeCache.getValue().then(cache => {
       setText(cache)
     })
-  },[])
+  }, [])
   const [charCount, setCharCount] = useState(0);
   const maxChars = 2000;
 
@@ -27,9 +34,11 @@ const TextInputComponent = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>简历描述（向AI描述你的简历）</h2>
-
       <textarea
+        onFocus={() => setBlur(false)}
+        onBlur={() => setBlur(true)}
         className={styles.textarea}
+        style={blur ? { borderColor: validate || text.length ? 'green' : 'red', boxShadow: validate || text.length ? '0 0 0 2px #00ff3c27' : '0 0 0 2px #ff002b27' } : {}}
         value={text}
         onChange={handleInputChange}
         placeholder="Enter your resume description here..."
