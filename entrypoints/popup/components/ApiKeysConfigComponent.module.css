@@ -1,0 +1,79 @@
+.container {
+  margin-top: 2rem;
+}
+.list {
+  list-style: none; /* 去掉默认的列表样式 */
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.2rem 0.4rem;
+  gap: 1em;
+  border: 1px solid #494949;
+  border-radius: 4px;
+  margin-bottom: 1em;
+  transition: box-shadow 0.2s;
+  background-color: #242424;
+}
+
+.listItem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 鼠标悬停阴影 */
+}
+.input {
+  font-size: 12px;
+  padding: 0.2rem 0.4rem;
+}
+
+.select {
+  padding: 0.2rem 0.4rem;
+  color: #333; /* 字体颜色 */
+  font-size: 10px;
+}
+
+.button {
+  font-size: 10px;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.button:disabled {
+  background-color: #00000050; /* 禁用状态的按钮颜色 */
+  cursor: not-allowed;
+}
+.button:disabled:hover {
+  border-color: transparent;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.operation {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+.dragBtn {
+  color: #63ff93;
+}
+.removeButton {
+  padding: 0.2em;
+  font-size: 12px;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: color 0.2s;
+}
+.removeButton:hover {
+  color: red;
+  border: 1px solid transparent;
+}

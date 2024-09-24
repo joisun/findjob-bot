@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import reactLogo from '@/assets/react.svg';
 import wxtLogo from '/wxt.svg';
-import TextInputComponent from "./components/TextInputComponent"
+import ResumeInputComponent from "./components/ResumeInputComponent"
 import './App.css';
 import LogDisplayComponent from './components/LogDisplayComponent';
 import TabSwitcher, { Tabs } from './components/TabSwitcher';
 import AdditionalInputComponent from './components/AdditionalInputComponent';
 import { resumeCache, additionalPrompt,greetingWordsLimit } from "@/utils/storage"
 import GreetingWordsLimitComponent from './components/GreetingWordsLimitComponent';
+import ApiKeysConfigComponent from './components/ApiKeysConfigComponent';
 function App() {
 
   const [tab, setTab] = useState(Tabs.main)
@@ -31,7 +32,7 @@ function App() {
           <button className='go-btn' onClick={handleClickStart}>
             Go!!!
           </button>
-          <button onClick={handleClickStop}>
+          <button className='stop-btn' onClick={handleClickStop}>
             Stop
           </button>
         </div>
@@ -41,7 +42,7 @@ function App() {
       <div className="card">
         {/* tab main */}
         <div style={{ display: tab === Tabs.main ? 'block' : 'none' }}>
-          <TextInputComponent />
+          <ResumeInputComponent />
           <LogDisplayComponent />
         </div>
 
@@ -49,6 +50,7 @@ function App() {
         <div style={{ display: tab === Tabs.settings ? 'block' : 'none' }}>
           <AdditionalInputComponent />
           <GreetingWordsLimitComponent/>
+          <ApiKeysConfigComponent/>
         </div>
 
       </div>

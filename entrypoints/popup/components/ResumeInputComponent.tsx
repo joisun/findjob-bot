@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './TextInputComponent.module.css';
+import styles from './ResumeInputComponent.module.css';
 import { resumeCache } from '@/utils/storage';
 const TextInputComponent = () => {
   const [text, setText] = useState('');

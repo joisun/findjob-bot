@@ -22,11 +22,56 @@
 .logo:hover {
   filter: drop-shadow(0 0 2em #54bc4ae0);
 }
+.stop-btn{
+  font-weight: 800;
+  background-color: #ff1c4d17;
+  border: 1px solid #ff1c4d6c;
+}
+.stop-btn:hover{
+  background-color: #ff1c4d28;
+  border: 1px solid #ff1c4da2;
+}
+.stop-btn:active{
+  background-color: #ff1c4d28;
+  border: 1px solid #ff0055;
+
+}
 .go-btn{
-  background-color: #646cff;
+  position: relative;
+  font-weight: 800;
+  background-color: #1cff1c28;
+  border: 1px solid #00ff3c;
+  overflow: hidden;
 }
 .go-btn:hover{
-  background-color: #535bf2;
+  border: 1px solid #63ff93;
+}
+.go-btn::after{
+  content: '';
+  position: absolute;
+  top: -200%;
+  left: -15%;
+  z-index: -1;
+  width: 250%;
+  aspect-ratio: 1;
+  background: conic-gradient(#005714, #0a7022,#00ff4c ,#005714,#005714);
+  border-radius: 100%;
+  /* opacity: 0; */
+  transition: all .5s ;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  transform-origin: center center;
+  transform:  rotate(0deg); 
+
+}
+.go-btn:hover::after{
+  opacity: 1;
+  transform: rotate(180deg); 
+}
+.go-btn:active{
+  background-color: transparent;
+}
+.go-btn:active::after{
+  transform: rotate(360deg); 
 }
 
 .card {
