@@ -1,0 +1,60 @@
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Build Chrome extension
+        run: pnpm build
+      
+      - name: Build Firefox extension
+        run: pnpm build:firefox
+      
+      - name: Zip Chrome extension
+        run: pnpm zip
+      
+      - name: Zip Firefox extension
+        run: pnpm zip:firefox
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      
+      - name: Upload Chrome Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./.output/*-chrome.zip
+          asset_name: extension-chrome.zip
+          asset_content_type: application/zip
+      
+      - name: Upload Firefox Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./.output/*-firefox.zip
+          asset_name: extension-firefox.zip
+          asset_content_type: application/zip
