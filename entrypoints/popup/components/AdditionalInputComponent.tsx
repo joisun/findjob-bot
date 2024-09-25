@@ -33,7 +33,7 @@ const TextInputComponent = () => {
         className={styles.textarea}
         value={text}
         onChange={handleInputChange}
-        placeholder="Enter your additional prompt here..."
+        placeholder="追加更多的限制词，例如： 不考虑 go, java 等后端岗位 | 不考虑web3, 区块链相关岗位 | 不考虑如技术咨询，技术支持等外包岗位"
       />
       <div className={styles.charCount}>
         {charCount ?? 0}/{maxChars} characters

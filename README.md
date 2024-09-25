@@ -1,3 +1,7 @@
-# WXT + React
+## Feature
 
-This template should help get you started developing with React in WXT.
+## Boss 直聘
+
+[x]: 根据简历 + 岗位 JD 自定生成求职招呼语， 并自动投递
+[x]: 自动跳过历史沟通项
+[x]: 支持循环操作上限

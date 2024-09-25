@@ -85,7 +85,7 @@ const ApiKeysConfigComponent: React.FC = () => {
     return (
         <div className={styles.container}>
             <h2 className={styles.title}>API 管理</h2>
-            <p>选择 API 提供方，可进行拖拽排序，将优先使用最前的提供方</p>
+            <p>选择 API 提供方，可进行拖拽排序，将优先使用最前的提供方，页面刷新后生效</p>
             <p className={styles.operation}>
                 <select onChange={e => setSelectedAgent(Number(e.target.value))} value={selectedAgent || ''}>
                     <option value="" disabled>选择API提供方</option>

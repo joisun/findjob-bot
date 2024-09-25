@@ -6,7 +6,6 @@ interface TextInputComponentProps {
 }
 const TextInputComponent: React.FC<TextInputComponentProps> = ({ validate }) => {
   const [text, setText] = useState('');
-  const [blur, setBlur] = useState(false);
 
 
 
@@ -33,12 +32,10 @@ const TextInputComponent: React.FC<TextInputComponentProps> = ({ validate }) => 
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>简历描述（向AI描述你的简历）</h2>
+      <h2 className={styles.title}>简历描述（向AI描述你的简历）<p>{charCount === 0 ? '简历描述信息不可为空' : ''}</p></h2>
       <textarea
-        onFocus={() => setBlur(false)}
-        onBlur={() => setBlur(true)}
         className={styles.textarea}
-        style={blur ? { borderColor: validate || text.length ? 'green' : 'red', boxShadow: validate || text.length ? '0 0 0 2px #00ff3c27' : '0 0 0 2px #ff002b27' } : {}}
+        style={{ borderColor: validate || text.length ? 'green' : 'red', boxShadow: validate || text.length ? '0 0 0 2px #00ff3c27' : '0 0 0 2px #ff002b27' }}
         value={text}
         onChange={handleInputChange}
         placeholder="Enter your resume description here..."
@@ -46,6 +43,7 @@ const TextInputComponent: React.FC<TextInputComponentProps> = ({ validate }) => 
       <div className={styles.charCount}>
         {charCount ?? 0}/{maxChars} characters
       </div>
+
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import xunfeiSpark from "@/aiModels/xunfeiSpark";
+import { xunfeiSparkAPIAIService } from "@/aiModels/xunfeiSpark";
 import cohere from "@/aiModels/cohere";
 import openai from "@/aiModels/openai";
 import kimi from "@/aiModels/kimi";
@@ -16,7 +16,7 @@ const cohereAPI = 'CvYnKq8ZuSuZjDuG00Qyf8dxCHQEEBW5wcc1zjvr'
 
 const openAiKey = "sk-IjXDututkGHzTVcw77BfB735565d46Db84Cb67804fF1E83b"
 const kimiApiKey = "sk-PT9aRZnfqpilMASfDj5HsePrYp5WfTakY4wQtwqpODKaSwUy"
-const chatanywhereApiKey = "sk-M72D5lilVXr4dKsWwPJgs8PRzvnLQleW0UrpBKdjjm7hHWWL"
+const chatanywhereApiKey = "sk-M72D5lilVXr4dKsWwPJgs8PRzvnLQleW0UrpBKdjjm7hHWWLa"
 let stopTag = false
 let AI: AiApiAdaptor | null = null;
 export default defineBackground(() => {
@@ -66,8 +66,10 @@ export default defineBackground(() => {
 
 function initAiApiAdaptor() {
   AI = new AiApiAdaptor([
-    new chatanywhereAIService(chatanywhereApiKey, ['gpt-4o-mini']),
+    new chatanywhereAIService(chatanywhereApiKey, ['gpt-4o-mini', 'gpt-3.5-turbo', 'gpt-4o', 'gpt-4']),
+    new xunfeiSparkAPIAIService(xunfeiAPIV3pro, ['generalv3']),
   ])
+  console.log('AI', AI) // TODO: FIX Z这里为什么没有打印值
 }
 
 async function zhipin(senderId?: number) {
@@ -77,57 +79,72 @@ async function zhipin(senderId?: number) {
   if (!senderId) return;
   // 尝试点击 工作意向偏好
 
-  await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
   let index = await jobListItemIndex.getValue()
   let loopLimit = await loopLimitStorage.getValue() || 1
   // 避免意外情况导致的死循环
   let safeloopMax = 10000
   let safeloopIndex = 0
-  while (index < loopLimit && !stopTag) {
+  while (index <= loopLimit && !stopTag) {
     safeloopIndex += 1
-    if(safeloopIndex >= safeloopMax){
+    if (safeloopIndex >= safeloopMax) {
       log('意外错误，程序终止...', 'error')
       return
     };
-    
-    index = await jobListItemIndex.getValue()
-    log(`将进行 [${index}/${loopLimit}] 次招聘信息的检查`)
-    await jobListItemIndex.setValue(index + 1)
 
-    await sleep(2000)
-    await browser.tabs.sendMessage(senderId, { from: 'background', type: "selectJobFromList", data: index });
-    await sleep(1000);// 等待点击事件
-    const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
-    const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
-    if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！', 'warn'); continue };
+    try {
 
 
-    //  fix 掉了while 循环的问题， 接下来，处理ai 的操作，1.prompt 调教，2.ai adaptor
-    const ifMatchBaseInfo = await checkIfMatchBaseJobInfo(jobBaseInfo)
-    if (!ifMatchBaseInfo) { log('不符合岗位基本描述！为你找下一个招聘信息~', 'warn'); continue }
+      index = await jobListItemIndex.getValue()
+      log(`将进行 [${index}/${loopLimit}] 次招聘信息的检查`)
+      await jobListItemIndex.setValue(index + 1)
+      // 选中求职偏好
+      await sleep(2000)
+      await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
+      await sleep(2000)
+      await browser.tabs.sendMessage(senderId, { from: 'background', type: "selectJobFromList", data: index });
+      await sleep(1000);// 等待点击事件
+      const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
+      const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
+      if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！', 'warn'); continue };
 
-    log('基本岗位信息符合，将为你生成对应的招呼语！', 'success')
 
-    // await sleep(3000);// 有的 api(kimi) 要求请求间隔超过1s
-    const msgOrFalse = await generateHelloMessage(jobDescription)
+      //  fix 掉了while 循环的问题， 接下来，处理ai 的操作，1.prompt 调教，2.ai adaptor
+      const ifMatchBaseInfo = await checkIfMatchBaseJobInfo(jobBaseInfo)
+      if (!ifMatchBaseInfo) { log('不符合岗位基本描述！为你找下一个招聘信息~', 'warn'); continue }
 
-    if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~', 'warn'); continue }
+      log('基本岗位信息符合，将为你生成对应的招呼语！', 'success')
 
-    log(msgOrFalse)
+      // await sleep(3000);// 有的 api(kimi) 要求请求间隔超过1s
+      const msgOrFalse = await generateHelloMessage(jobDescription)
 
-    // 点击立即沟通按钮
-    await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickContactBtn" });
-    await sleep(2000)
-    console.log('msgOrFalse', msgOrFalse)
-    await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: msgOrFalse });
-    await sleep(2000)
-    await browser.tabs.sendMessage(senderId, { from: 'background', type: "goBack" });
+      if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~', 'warn'); continue }
+
+      log(msgOrFalse)
+
+      // 点击立即沟通按钮
+      await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickContactBtn" });
+      await sleep(2000)
+      console.log('msgOrFalse', msgOrFalse)
+      await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: msgOrFalse });
+      await sleep(2000)
+      await browser.tabs.sendMessage(senderId, { from: 'background', type: "goBack" });
+
+    } catch (error) {
+      if (error instanceof APIException) {
+        log(`${error.type}:${error.message}`, 'error')
+        return;
+      } else {
+        log(`遇到不可预期的错误，将自动继续尝试下一项${error}`, 'error')
+        continue
+      }
+    }
   }
+  // TODO: 检查类的实现，和错误补货， 实现xunfei Spark 的api server 类， 加入更多其他的免费api
+
   log('结束！')
 
-
 }
-async function checkIfMatchBaseJobInfo(jobBaseInfo: string) {
+async function checkIfMatchBaseJobInfo(jobBaseInfo: { base: string, companyInfo: string, jonLocation: string }) {
   if (!AI) { return; }
   const checkBaseInfoMatch = await generateBaseInfoCheckMessage(jobBaseInfo)
   const _ifMatch = await AI.chat(checkBaseInfoMatch);

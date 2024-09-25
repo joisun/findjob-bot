@@ -29,13 +29,19 @@ ${await getResume()}
 `
 }
 
-export async function generateBaseInfoCheckMessage(jbbaseinfo: string) {
+export async function generateBaseInfoCheckMessage(jbbaseinfo: { base: string, companyInfo: string, jonLocation: string }) {
     return `
 请根据下面岗位基本信息,和我的简历求职内容,帮我分析我的求职意向和该岗位基本信息是否匹配,如果匹配请返回 true, 不匹配返回 false, 你的回答**只能**包含 'true' 或者 'false', 不要有任何多余解释或者其他文字。
 额外的注意事项: : ${await additionalPrompt.getValue()}
 职位基本信息: 
 ------
-${jbbaseinfo}
+${jbbaseinfo.base}
+公司基本信息:
+------
+${jbbaseinfo.companyInfo}
+工作地点:
+------
+${jbbaseinfo.jonLocation}
 
 简历: 
 ------
@@ -49,7 +55,7 @@ export function convertMsgToBool(msg: string) {
 
 
 export function log(msg: string, type: LoggerType = 'info') {
-    const message = `findjob-bot: ${msg}`
+    const message = `[${new Date().toLocaleTimeString()} Findjob-bot]: ${msg}`
     sendLog({
         message,
         type: type

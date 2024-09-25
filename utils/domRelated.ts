@@ -63,7 +63,7 @@ function timeWalker(gap: number, limit: number, cb: Function, failedHandler: Fun
 
 
 export function goTo(url: string) {
-  if (location.href === url) location.reload();
+  if (location.href === url) { location.reload(); }
   location.href = url
 }
 
@@ -114,7 +114,15 @@ export async function getJobDescription() {
 export async function getJobBaseInfo() {
   const jobDescriptionEl = await waitForElement(`div.job-detail-container div.job-header-info`) as HTMLElement | null
   if (!jobDescriptionEl) return null
-  return jobDescriptionEl.innerText
+  const checkMoreInfoBtn = await waitForElement('.more-job-btn') as HTMLLinkElement
+  if (checkMoreInfoBtn.href) {
+    const url = new URL(checkMoreInfoBtn.href)
+    const companyInfo = await fetchCompanyInfo(url.origin + url.pathname)
+    return {
+      base: jobDescriptionEl.innerText,
+      ...companyInfo
+    }
+  }
 }
 
 export async function getConcatBtn() {
@@ -127,7 +135,7 @@ export async function getConcatBtn() {
 export async function fillInputField(textContent: string) {
   const inputTextField = await waitForElement(".chat-input") as HTMLElement | null
   const checkIfcontacted = document.querySelector(".item-myself") as HTMLElement | null
-  if(checkIfcontacted) { log("已存在历史沟通， 跳过....", 'warn');  return}
+  if (checkIfcontacted) { log("已存在历史沟通， 跳过....", 'warn'); return }
   if (!inputTextField) { log("定位输入框失败!"); return }
   inputTextField.focus()
   inputTextField.innerText = textContent
@@ -146,4 +154,32 @@ export async function fillInputField(textContent: string) {
   });
   // 触发回车键事件
   inputTextField.dispatchEvent(enterEvent);
+}
+
+
+export async function fetchCompanyInfo(jobDetailUrl: string):Promise<{companyInfo: string, jonLocation: string}> {
+  return new Promise((resolve, reject) => {
+    fetch(jobDetailUrl) // 替换为目标 URL
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('网络响应错误: ' + response.status);
+        }
+        return response.text(); // 获取响应文本
+      })
+      .then(html => {
+        // 创建 DOMParser 实例
+        const parser = new DOMParser();
+        // 解析 HTML 字符串为 Document 对象
+        const doc = parser.parseFromString(html, 'text/html');
+        // 现在可以操作 doc，获取 DOM 元素
+        const companyInfo = doc && doc.querySelector('.job-detail-company .job-sec-text')?.textContent || '';
+        const jonLocation = doc && doc.querySelector('.job-location .location-address')?.textContent || '';
+        resolve({ companyInfo, jonLocation });
+      })
+      .catch(error => {
+        reject(`获取公司信息和工作地点失败: ${error}`);
+        log(`获取公司信息和工作地点失败: ${error}`, 'error');
+      });
+  })
+
 }

@@ -1,4 +1,12 @@
 .container {
+  p{
+    display: inline-block;
+    text-align: left;
+    background-color: #ff00001f;
+    width: fit-content;
+    color: #ff0000;
+    margin: 0;
+  }
 }
 
 .textarea {

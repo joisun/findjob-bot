@@ -8,6 +8,7 @@ import LogDisplayComponent from './components/LogDisplayComponent';
 import LoopLimitComponent from './components/LoopLimitComponent';
 import ResumeInputComponent from "./components/ResumeInputComponent";
 import TabSwitcher, { Tabs } from './components/TabSwitcher';
+import { fetchCompanyInfo } from '@/utils/domRelated'
 import wxtLogo from '/wxt.svg';
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
       if (cache.trim() === '') {
         setResumeValidate(false)
         return
-      }else{
+      } else {
         setResumeValidate(true)
         browser.runtime.sendMessage({ from: 'popup', type: "start-bot" });
       }
@@ -27,6 +28,7 @@ function App() {
   }
 
   const handleClickStop = async function () {
+
     // const resume = await resumeCache.getValue()
     // const msgOrFalse = await additionalPrompt.getValue()
     // const aaa = await greetingWordsLimit.getValue()
@@ -34,6 +36,10 @@ function App() {
 
 
     browser.runtime.sendMessage({ from: 'popup', type: "stop-bot" });
+  }
+  const handleClickTest = async function () {
+    // fetchCompanyInfo()
+ 
   }
   return (
     <div id='root-container'>
@@ -45,6 +51,9 @@ function App() {
           </button>
           <button className='stop-btn' onClick={handleClickStop}>
             Stop
+          </button>
+          <button className='stop-btn' onClick={handleClickTest}>
+            test
           </button>
         </div>
       </h1>

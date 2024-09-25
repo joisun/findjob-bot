@@ -4,6 +4,7 @@ import { getJobBaseInfo, getJobDescription, getConcatBtn, fillInputField, goTo }
 
 export default defineContentScript({
   matches: ['*://*.zhipin.com/*'],
+  runAt: 'document_end',
   main() {
     console.log("Hello.Content")
     // if (!isValidPage()) {
@@ -15,6 +16,7 @@ export default defineContentScript({
 
       switch (message.type) {
         case 'start-bot':
+          console.log("rereived start bot message from background to content")
           browser.runtime.sendMessage({ from: 'content', type: "init", site: "zhipin" });
           break;
         case 'clickPreference':
@@ -61,8 +63,7 @@ export default defineContentScript({
 
 async function clickPreference() {
   // preference 列表是动态插入的，这里等待执行
-  await sleep(1000)
-  const preference = document.querySelector(".recommend-search-expect a:nth-child(3)") as HTMLElement
+  const preference = await waitForElement(".recommend-search-expect a:nth-child(3)") as HTMLElement
   if (preference) {
     preference.click()
   } else {

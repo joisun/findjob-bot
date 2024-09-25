@@ -44,7 +44,7 @@ export const additionalPrompt = storage.defineItem<string>(
 export const greetingWordsLimit = storage.defineItem<number>(
     'local:greetingWordsLimit',
     {
-        fallback: 100,
+        fallback: 50,
     },
 );
 
