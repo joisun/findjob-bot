@@ -1,18 +1,18 @@
 name: Release
 on:
-  push:
-    branches: ["main"]
+  workflow_dispatch:
+
 permissions:
-  contents: write    
+  contents: write
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v2
         with:
-          version: 9.9.0      
+          version: 9.9.0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -21,17 +21,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       
-      - name: Build Chrome extension
-        run: pnpm build
-      
-      - name: Build Firefox extension
-        run: pnpm build:firefox
-      
-      - name: Zip Chrome extension
-        run: pnpm zip
-      
-      - name: Zip Firefox extension
-        run: pnpm zip:firefox
+      - name: Build and zip extensions
+        run: |
+          pnpm build
+          pnpm build:firefox
+          pnpm zip
+          pnpm zip:firefox
       
       - name: Create Release
         id: create_release
@@ -39,8 +34,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name  }}
-          release_name: Release ${{ github.ref_name  }}
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
       
@@ -50,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./.output/*-chrome.zip
+          asset_path: .output/wxt-chrome.zip
           asset_name: extension-chrome.zip
           asset_content_type: application/zip
       
@@ -60,6 +55,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./.output/*-firefox.zip
+          asset_path: .output/wxt-firefox.zip
           asset_name: extension-firefox.zip
           asset_content_type: application/zip
