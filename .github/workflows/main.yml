@@ -1,6 +1,7 @@
 name: Release
 on:
-  main:
+  push:
+    branches: ["main"]
 
 jobs:
   build-and-release:
