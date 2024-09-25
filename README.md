@@ -1,3 +1,7 @@
+<p align='center'><img width='100' src="./README.assets/findjob-bot.svg"><h1 align='center'>Findjob-bot</h1></p>
+
+利用 AI 帮助你找工作
+
 ## 写在前面
 
 作者本人已经失业很久了，本项目的初衷是为了帮助我进行岗位筛选，降低有效沟通成本。 写在半途中，觉得可能很多人和我一样，面对当下就业环境艰难而倍感疲惫， 所以就做一些通用性的适配。
@@ -146,4 +150,4 @@ function initAiApiAdaptor() {
 
 ## 请我吃馒头
 
-![1547684db79f04b8a3a7be754fe564c](./README.assets/1547684db79f04b8a3a7be754fe564c.jpg)
+<img width="400" src="./README.assets/1547684db79f04b8a3a7be754fe564c.jpg">
