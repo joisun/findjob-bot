@@ -28,9 +28,9 @@
 
 ### 注意点
 
-你需要设定至少一个偏好， 否则该插件将无法预期运行。
+- FireFox 插件从： about:debugging#/runtime/this-firefox 这里安装
 
-![image-20240925224214374](./README.assets/image-20240925224214374.png)
+- 你需要设定至少一个偏好， 否则该插件将无法预期运行。![image-20240925224214374](./README.assets/image-20240925224214374.png)
 
 ## 目前支持的 API 提供方
 
