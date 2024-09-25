@@ -1,0 +1,17 @@
+wxt 不支持自定义输出文件名 https://github.com/wxt-dev/wxt/issues/177
+
+因此发布的时候，tag 名，版本号 要和 实际zip 输出保持一致。 例如
+
+
+```bash
+# right
+git tag 0.0.1
+git push origin 0.0.1
+```
+
+
+```bash
+# wrong
+git tag v0.0.1
+git push origin v0.0.1
+```
