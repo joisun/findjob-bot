@@ -25,6 +25,9 @@ export default defineContentScript({
         case 'selectJobFromList':
           return await selectJobFromList(message.data)
 
+        case 'checkLocation':
+          return await checkLocation()
+
         case 'getJobBaseInfo':
           const jobBaseInfo = await getJobBaseInfo()
           return Promise.resolve(jobBaseInfo)
@@ -60,12 +63,16 @@ export default defineContentScript({
     // inConcatPage()
   },
 });
+async function checkLocation() {
+
+}
 
 async function clickPreference() {
   // preference 列表是动态插入的，这里等待执行
   const preference = await waitForElement(".recommend-search-expect a:nth-child(3)") as HTMLElement
   if (preference) {
     preference.click()
+    return preference.textContent
   } else {
     log(`【目标意向工作项】未找到, 将直接从推荐职位列表中找寻工作机会！`)
   }
@@ -75,8 +82,12 @@ async function selectJobFromList(index: number) {
   // const targetJobListItem = await waitForElement(`.rec-job-list > li:nth-child(${index})`) as HTMLElement | null
   const targetJobListItem = document.querySelector(`.rec-job-list > li:nth-child(${index})`) as HTMLElement | null
   if (targetJobListItem) {
-    targetJobListItem.scrollIntoView()
+    targetJobListItem.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center' // 滚动到可视区域的中心, 以便触发懒加载
+    })
     targetJobListItem.click()
+    return targetJobListItem.querySelector('.company-location')?.textContent
   } else {
     // 检查是不是最后一个，如果是的，则尝试翻页
   }

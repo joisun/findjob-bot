@@ -72,6 +72,8 @@ async function zhipin(senderId?: number) {
 
   let index = await jobListItemIndex.getValue()
   let loopLimit = await loopLimitStorage.getValue() || 1
+  log(`将进行 [${index}/${loopLimit}] 次招聘信息的检查`)
+
   // 避免意外情况导致的死循环
   let safeloopMax = 10000
   let safeloopIndex = 0
@@ -86,14 +88,23 @@ async function zhipin(senderId?: number) {
 
 
       index = await jobListItemIndex.getValue()
-      log(`将进行 [${index}/${loopLimit}] 次招聘信息的检查`)
-      await jobListItemIndex.setValue(index + 1)
-      // 选中求职偏好(垃圾boss 偏好没卵用，没几个地点是偏好工作base的地点)
-      // await sleep(2000)
-      // await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
-      // await sleep(2000)
-      await browser.tabs.sendMessage(senderId, { from: 'background', type: "selectJobFromList", data: index });
+      await jobListItemIndex.setValue(++index)
+      // 选中求职偏好(垃圾boss 偏好没卵用，没几个地点是偏好工作base的地点, 但是“推荐职位列表有限制”)
+      await sleep(2000)
+      const preference = await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
+      const match = preference.match(/\（(.*?)\）/);
+      const preferCity = match ? match[1] : null;
+      if (!preferCity) { log('获取[意向城市偏好失败], 将尝试下一个招聘信息！', 'warn'); continue };
+
+
+      await sleep(2000)
+      const jobLocation = await browser.tabs.sendMessage(senderId, { from: 'background', type: "selectJobFromList", data: index });
+      if (!jobLocation) { log('获取[工作城市信息失败], 将尝试下一个招聘信息！', 'warn'); continue };
+
+      if (!jobLocation.includes(preferCity)) { log('[意向城市和工作城市不匹配], 将尝试下一个招聘信息！', 'warn'); continue };
+
       await sleep(1000);// 等待点击事件
+      const checkLocation = await browser.tabs.sendMessage(senderId, { from: 'background', type: "checkLocation" });
       const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
       const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
       if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！', 'warn'); continue };
