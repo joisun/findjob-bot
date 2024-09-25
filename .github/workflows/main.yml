@@ -4,10 +4,8 @@ on:
         tags:
             - 'v*'
     workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
@@ -36,7 +34,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: 'Findjob-bot v__VERSION__'
+          release_name: 'Findjob-bot v${{ github.ref_name }}'  # Updated version name
           draft: false
           prerelease: false
           publish: true
+          
+      - name: Upload Chrome Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: .output/wxt-chrome.zip
+          asset_name: Findjob-bot v${{ github.ref_name }}-chrome.zip  # Updated asset name
+          asset_content_type: application/zip
+      
+      - name: Upload Firefox Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: .output/wxt-firefox.zip
+          asset_name: Findjob-bot v${{ github.ref_name }}-firefox.zip  # Updated asset name
+          asset_content_type: application/zip          
