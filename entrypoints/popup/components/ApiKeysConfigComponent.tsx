@@ -12,11 +12,17 @@ interface Agent {
 }
 
 
+function generateOptions() {
+    const agents = Object.values(AgentsType);
+    return agents.map((agent, index) => {
+        return {
+            name: agent,
+            id: index
+        }
+    })
 
-const agents: Agent[] = [
-    { id: 1, name: AgentsType.XunFeiSpark },
-    { id: 2, name: AgentsType.ChatAnywhere },
-];
+}
+const agents: Agent[] = generateOptions()
 
 const ApiKeysConfigComponent: React.FC = () => {
     const [selectedAgent, setSelectedAgent] = useState<number | null>(null);

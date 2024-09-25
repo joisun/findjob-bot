@@ -13,8 +13,6 @@ export async function chatComplete(message: string) {
 export interface AIModelInterface {
     /**API 的 名字 */
     name?: AgentsType
-    /**API 的 APIKey */
-    apikey: string
     /**API 的 URL 请求地址 */
     apiUrl?: string
     /**API 所应用的模型列表 */
@@ -24,12 +22,10 @@ export interface AIModelInterface {
 
 export class AiApiBasic implements AIModelInterface {
     name: AgentsType
-    apikey: string
     apiUrl: string
     modelList: string[]
     requestFn: RequestFn
-    constructor(name: AgentsType, apiUrl: string, apiKey: string, modelList: string[], requestFn: RequestFn) {
-        this.apikey = apiKey
+    constructor(name: AgentsType, apiUrl: string, modelList: string[], requestFn: RequestFn) {
         this.modelList = modelList
         this.name = name
         this.apiUrl = apiUrl
@@ -37,14 +33,15 @@ export class AiApiBasic implements AIModelInterface {
     }
     // AI 服务应该在自己内部尝试多轮 模型尝试,直到全部失败才抛出错误
     async chatCompletion(input: string): Promise<string> {
-        if (!this.apikey) {
+        const apiKey = await getAgentApiKey(this.name);
+        if (!apiKey) {
             throw new Error(`AI API: ${this.name} 未设置apikey，请在setting中设置`);
         }
         for (const model of this.modelList) {
             try {
                 // 依次尝试调用各个服务
                 const response = await this.requestFn({
-                    apikey: this.apikey,
+                    apikey: apiKey,
                     apiUrl: this.apiUrl,
                     model: model,
                     userMessage: input
@@ -68,10 +65,15 @@ export class AiApiBasic implements AIModelInterface {
  * AI 接口调度器, 自动化尝试调用各个 AI 服务, 包括所有 AI 接口提供的不同模型
  */
 export class AiApiAdaptor {
-    services: AIModelInterface[]
+    services!: AIModelInterface[]
     toRemoveServices: AIModelInterface[] = []
     constructor(services: AIModelInterface[]) {
-        this.services = services
+        agentsStorage.getValue().then(agentApiKeys => {
+            this.services = agentApiKeys.map(agentApi => {
+                return services.find(service => service.name === agentApi.agentName)!
+            }).filter(service => service !== undefined)
+        })
+
     }
     /**
      * 当某个服务请求失败的时候，就在该轮循环中结束的时候，暂时移除，避免每次都重试该失败的 服务
@@ -81,8 +83,8 @@ export class AiApiAdaptor {
             const index = this.services.indexOf(service);
             if (index !== -1) {
                 this.services.splice(index, 1); // 从数组中删除元素
+                log(`暂时移除无效的 API 服务 ${service.name}`, 'warn')
             }
-            log(`暂时移除无效的 API 服务 ${service.name}`, 'warn')
         }
     }
 
@@ -99,8 +101,10 @@ export class AiApiAdaptor {
                 }
                 // 收集需要移除的 service
                 this.toRemoveServices.push(service);
+                console.log('error',error)
                 continue;  // 尝试下一个服务
             }
+
         }
         throw new APIException("All AI services failed", API_ERROR_TYPE.APIError);
     }

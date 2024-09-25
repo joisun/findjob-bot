@@ -5,7 +5,7 @@
 // 所有可用模型查询
 // https://chatanywhere.apifox.cn/api-92222074
 import { AgentsType } from "@/typings/aiModelAdaptor";
-import { API_ERROR, API_ERROR_TYPE, RequestFn } from "@/typings/app";
+import { API_ERROR_TYPE, RequestFn } from "@/typings/app";
 import { getSystemPrompt } from "@/utils/app";
 import { AiApiBasic } from ".";
 
@@ -54,44 +54,8 @@ const chatanywhereAPI: RequestFn = function ({ apikey, apiUrl, model, userMessag
 
 
 export class chatanywhereAIService extends AiApiBasic {
-    constructor(apiKey: string, modelList: string[]) {
+    constructor(modelList: string[]) {
         const apiUrl = 'https://api.chatanywhere.tech/v1/chat/completions'
-        super(AgentsType.ChatAnywhere, apiUrl, apiKey, modelList, chatanywhereAPI)
+        super(AgentsType.ChatAnywhere, apiUrl, modelList, chatanywhereAPI)
     }
 }
-// export class chatanywhereAIService implements AIModelInterface {
-//     name = AgentsType.ChatAnywhere
-//     apikey
-//     apiUrl = 'https://api.chatanywhere.tech/v1/chat/completions'
-//     modelList = ['gpt-4o-mini']
-
-//     /**
-//      * AI 服务 chatanywhereAIService
-//      * @param apiKey
-//      * @param modelList 支持的模型列表, 默认使用第一个, 失败后往后依次尝试
-//      */
-//     constructor(apiKey: string, modelList: string[]) {
-//         this.apikey = apiKey;
-//         this.modelList = modelList;
-//     }
-//     // AI 服务应该在自己内部尝试多轮 模型尝试,直到全部失败才抛出错误
-//     async chatCompletion(input: string): Promise<string> {
-//         if (!this.apikey) {
-//             throw new Error(`AI API: ${this.name} 未设置apikey，请在setting中设置`);
-//         }
-
-//         for (const model of this.modelList) {
-//             try {
-//                 // 依次尝试调用各个服务
-//                 const response = await chatanywhereAPI(this.apikey, this.apiUrl, model, input);
-//                 return Promise.resolve(response);
-//             } catch (error) {
-//                 log(`${this.name} API failed for model ${model}: \n ${error}`, 'error');
-//                 continue;  // 尝试下一个model
-//             }
-//         }
-//         // 如果所有模型的请求都失败了,那么就会抛出错误
-//         throw new APIException("All Model for ChatAnywhere services failed", API_ERROR_TYPE.APIError)
-
-//     }
-// }

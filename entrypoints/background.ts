@@ -1,22 +1,11 @@
-import { xunfeiSparkAPIAIService } from "@/aiModels/xunfeiSpark";
-import cohere from "@/aiModels/cohere";
-import openai from "@/aiModels/openai";
-import kimi from "@/aiModels/kimi";
-import { sleep } from "@/utils/common";
-import { log } from "@/utils/app";
-import { storage } from 'wxt/storage';
-import { jobListItemIndex } from "@/utils/storage"
 import { AiApiAdaptor } from "@/aiModels";
 import { chatanywhereAIService } from "@/aiModels/chatanywhere";
+import { kimiAPIAIService } from "@/aiModels/kimi";
+import { xunfeiSparkAPIAIService } from "@/aiModels/xunfeiSpark";
+import { log } from "@/utils/app";
+import { sleep } from "@/utils/common";
+import { jobListItemIndex } from "@/utils/storage";
 
-const xunfeiAPILite = 'ZKjFMdRTavVPDUABbwvf:hratmjKhQzyVNuArxvzm'
-const xunfeiAPIV3pro = 'MTrricoschHlfxWNvIJD:ZXklDofIqPdoBxkWsjTA'
-
-const cohereAPI = 'CvYnKq8ZuSuZjDuG00Qyf8dxCHQEEBW5wcc1zjvr'
-
-const openAiKey = "sk-IjXDututkGHzTVcw77BfB735565d46Db84Cb67804fF1E83b"
-const kimiApiKey = "sk-PT9aRZnfqpilMASfDj5HsePrYp5WfTakY4wQtwqpODKaSwUy"
-const chatanywhereApiKey = "sk-M72D5lilVXr4dKsWwPJgs8PRzvnLQleW0UrpBKdjjm7hHWWLa"
 let stopTag = false
 let AI: AiApiAdaptor | null = null;
 export default defineBackground(() => {
@@ -30,6 +19,8 @@ export default defineBackground(() => {
         console.log("start-bot listener triggered")
         await jobListItemIndex.setValue(1)
         await sendMessageToContent({ type: "goBack" })
+        initAiApiAdaptor()
+
         // await browser.tabs.sendMessage(tab.id, { from: 'background', type: "goBack" });
         // await sleep(2000)
         // await browser.tabs.sendMessage(tab.id, { from: 'background', type: "start-bot" });
@@ -61,15 +52,15 @@ export default defineBackground(() => {
     }
   });
 
-  initAiApiAdaptor()
 });
+
 
 function initAiApiAdaptor() {
   AI = new AiApiAdaptor([
-    new chatanywhereAIService(chatanywhereApiKey, ['gpt-4o-mini', 'gpt-3.5-turbo', 'gpt-4o', 'gpt-4']),
-    new xunfeiSparkAPIAIService(xunfeiAPIV3pro, ['generalv3']),
+    new chatanywhereAIService(['gpt-4o-mini', 'gpt-3.5-turbo', 'gpt-4o', 'gpt-4']),
+    new xunfeiSparkAPIAIService(['generalv3']),
+    new kimiAPIAIService(["moonshot-v1-8k"])
   ])
-  console.log('AI', AI) // TODO: FIX Z这里为什么没有打印值
 }
 
 async function zhipin(senderId?: number) {
@@ -97,24 +88,23 @@ async function zhipin(senderId?: number) {
       index = await jobListItemIndex.getValue()
       log(`将进行 [${index}/${loopLimit}] 次招聘信息的检查`)
       await jobListItemIndex.setValue(index + 1)
-      // 选中求职偏好
-      await sleep(2000)
-      await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
-      await sleep(2000)
+      // 选中求职偏好(垃圾boss 偏好没卵用，没几个地点是偏好工作base的地点)
+      // await sleep(2000)
+      // await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
+      // await sleep(2000)
       await browser.tabs.sendMessage(senderId, { from: 'background', type: "selectJobFromList", data: index });
       await sleep(1000);// 等待点击事件
       const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
       const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
       if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！', 'warn'); continue };
+      if (!jobBaseInfo.companyInfo.trim()) { log('该公司未提供公司基本信息, 将视作皮包公司，为你尝试下一个招聘信息！', 'warn'); continue };
 
 
-      //  fix 掉了while 循环的问题， 接下来，处理ai 的操作，1.prompt 调教，2.ai adaptor
       const ifMatchBaseInfo = await checkIfMatchBaseJobInfo(jobBaseInfo)
       if (!ifMatchBaseInfo) { log('不符合岗位基本描述！为你找下一个招聘信息~', 'warn'); continue }
 
       log('基本岗位信息符合，将为你生成对应的招呼语！', 'success')
 
-      // await sleep(3000);// 有的 api(kimi) 要求请求间隔超过1s
       const msgOrFalse = await generateHelloMessage(jobDescription)
 
       if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~', 'warn'); continue }
@@ -124,7 +114,6 @@ async function zhipin(senderId?: number) {
       // 点击立即沟通按钮
       await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickContactBtn" });
       await sleep(2000)
-      console.log('msgOrFalse', msgOrFalse)
       await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: msgOrFalse });
       await sleep(2000)
       await browser.tabs.sendMessage(senderId, { from: 'background', type: "goBack" });
@@ -139,7 +128,6 @@ async function zhipin(senderId?: number) {
       }
     }
   }
-  // TODO: 检查类的实现，和错误补货， 实现xunfei Spark 的api server 类， 加入更多其他的免费api
 
   log('结束！')
 

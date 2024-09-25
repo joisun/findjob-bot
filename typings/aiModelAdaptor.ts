@@ -1,6 +1,7 @@
 export enum AgentsType {
     "XunFeiSpark" = "XunFeiSpark",
-    "ChatAnywhere" = "ChatAnywhere"
+    "ChatAnywhere" = "ChatAnywhere",
+    "Kimi" = "Kimi"
 }
 export type AiAgentApiKey = {
     agentName: AgentsType,

@@ -8,7 +8,6 @@ import LogDisplayComponent from './components/LogDisplayComponent';
 import LoopLimitComponent from './components/LoopLimitComponent';
 import ResumeInputComponent from "./components/ResumeInputComponent";
 import TabSwitcher, { Tabs } from './components/TabSwitcher';
-import { fetchCompanyInfo } from '@/utils/domRelated'
 import wxtLogo from '/wxt.svg';
 function App() {
 
@@ -39,7 +38,9 @@ function App() {
   }
   const handleClickTest = async function () {
     // fetchCompanyInfo()
- 
+    // const key = await getAgentApiKey(AgentsType.ChatAnywhere)
+    // console.log('key',key)
+
   }
   return (
     <div id='root-container'>
@@ -52,9 +53,9 @@ function App() {
           <button className='stop-btn' onClick={handleClickStop}>
             Stop
           </button>
-          <button className='stop-btn' onClick={handleClickTest}>
+          {/* <button className='stop-btn' onClick={handleClickTest}>
             test
-          </button>
+          </button> */}
         </div>
       </h1>
       <TabSwitcher tab={tab} handleSwitch={tab => setTab(tab)} />

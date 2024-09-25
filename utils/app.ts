@@ -1,5 +1,6 @@
+import { AgentsType } from "@/typings/aiModelAdaptor"
 import { LoggerType } from "@/typings/app"
-import { additionalPrompt, resumeCache } from "@/utils/storage"
+import { additionalPrompt, resumeCache, agentsStorage } from "@/utils/storage"
 export function getSystemPrompt() {
     return `Please analyze the user-provided resume information and the job description to assess how well the user matches the job. Focus on key factors like job title, required skills, education, years of experience, and other relevant details. Based on the analysis, write a polite and conversational job application greeting that the user can send directly to the employer. Mention specific skills or qualifications from the job requirements, explaining how the user’s resume aligns with those points. Avoid any language that would suggest the greeting is AI-generated or written by someone else. Keep the tone professional, confident, and friendly, in the first-person perspective of the job seeker. The greeting should be written in Chinese.`
 }
@@ -80,4 +81,9 @@ function sendLog(msg: { message: string, type: LoggerType }) {
         type: 'findjob-bot-logger',
         data: msg
     });
+}
+
+export async function getAgentApiKey(Agent: AgentsType) {
+    const keys = await agentsStorage.getValue()
+    return keys.find(agent => agent.agentName === Agent)?.apiKey
 }
