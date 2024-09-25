@@ -8,7 +8,7 @@ import LogDisplayComponent from './components/LogDisplayComponent';
 import LoopLimitComponent from './components/LoopLimitComponent';
 import ResumeInputComponent from "./components/ResumeInputComponent";
 import TabSwitcher, { Tabs } from './components/TabSwitcher';
-import wxtLogo from '/wxt.svg';
+import wxtLogo from '/findjob-bot.svg';
 function App() {
 
   const [tab, setTab] = useState(Tabs.main)
