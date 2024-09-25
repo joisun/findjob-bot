@@ -45,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .output/wxt-chrome.zip
+          asset_path: .output/Findjob-bot v${{ github.ref_name }}-chrome.zip
           asset_name: Findjob-bot v${{ github.ref_name }}-chrome.zip  # Updated asset name
           asset_content_type: application/zip
       
@@ -55,6 +55,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .output/wxt-firefox.zip
+          asset_path: .output/Findjob-bot v${{ github.ref_name }}-firefox.zip
           asset_name: Findjob-bot v${{ github.ref_name }}-firefox.zip  # Updated asset name
           asset_content_type: application/zip          
