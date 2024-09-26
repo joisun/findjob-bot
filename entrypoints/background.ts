@@ -90,6 +90,7 @@ async function zhipin(senderId?: number) {
       index = await jobListItemIndex.getValue()
       await jobListItemIndex.setValue(++index)
       // 选中求职偏好(垃圾boss 偏好没卵用，没几个地点是偏好工作base的地点, 但是“推荐职位列表有限制”)
+      // /**
       await sleep(2000)
       const preference = await browser.tabs.sendMessage(senderId, { from: 'background', type: "clickPreference" });
       const match = preference.match(/\（(.*?)\）/);
@@ -105,6 +106,9 @@ async function zhipin(senderId?: number) {
 
       await sleep(1000);// 等待点击事件
       const checkLocation = await browser.tabs.sendMessage(senderId, { from: 'background', type: "checkLocation" });
+      //  */
+      // const jobLocation = await browser.tabs.sendMessage(senderId, { from: 'background', type: "selectJobFromList", data: index });
+
       const jobBaseInfo = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobBaseInfo" });
       const jobDescription = await browser.tabs.sendMessage(senderId, { from: 'background', type: "getJobDescription" });
       if (!jobDescription || !jobBaseInfo) { log('获取[岗位基本信息/职位描述失败], 将尝试下一个招聘信息！', 'warn'); continue };

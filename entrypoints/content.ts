@@ -79,20 +79,37 @@ async function clickPreference() {
 }
 
 async function selectJobFromList(index: number) {
-  // const targetJobListItem = await waitForElement(`.rec-job-list > li:nth-child(${index})`) as HTMLElement | null
-  const targetJobListItem = document.querySelector(`.rec-job-list > li:nth-child(${index})`) as HTMLElement | null
-  if (targetJobListItem) {
-    targetJobListItem.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center' // 滚动到可视区域的中心, 以便触发懒加载
-    })
-    targetJobListItem.click()
-    return targetJobListItem.querySelector('.company-location')?.textContent
-  } else {
-    // 检查是不是最后一个，如果是的，则尝试翻页
+  const selector = `.rec-job-list > li:nth-child(${index})`;
+  let jobItem = document.querySelector(selector) as HTMLLIElement
+
+  // 等待列表项存在
+  while (!jobItem) {
+    // 获取列表容器
+    const container = document.querySelector('.rec-job-list');
+
+    // 如果容器存在，进行滚动
+    if (container) {
+      // 模拟滚动到底部
+      window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})
+
+      // 等待下一次加载
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 根据实际情况调整时间
+    }
+
+    // 重新选择目标项
+    jobItem = document.querySelector(selector)!
   }
 
+  // 如果找到了目标项，选择它
+  if (jobItem) {
+    jobItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    jobItem.click(); // 如果需要点击选中
+    return jobItem.querySelector('.company-location')?.textContent
+
+  }
 }
+
+
 
 
 function isValidPage() {
