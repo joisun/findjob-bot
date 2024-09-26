@@ -1,3 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.gradient-background {
+  background: linear-gradient(
+    to right bottom,
+    #00b72b,
+    #00ff4c,
+    #005e10
+  );
+  /* -webkit-background-clip: text; */
+  /* color: transparent; */
+}
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1;
@@ -75,33 +89,61 @@ button:active {
   }
 }
 
-input{
+input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
   border: 1px solid #494949;
   border-radius: 4px;
-}
-
-input {
+  resize: none;
+  font-family: inherit;
+  font-size: 14px;
   flex: 1;
   transition: border-color 0.2s;
 }
 
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 120px;
+  line-height: 1.5;
+  padding: 0.5rem 0.5rem 1em 0.5rem;
+  border: 1px solid #494949;
+  border-radius: 4px;
+  resize: none;
+  font-family: inherit;
+  font-size: 12px;
+}
 
-input:focus,textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border: 1px solid #00ff3c;
   box-shadow: 0 0 0 2px #00ff3c27;
-  
 }
-h1{
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(to right bottom, #00b72b, #63ff93, #61ffe5, #45b157);
+h1 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: linear-gradient(
+    to right bottom,
+    #00b72b,
+    #63ff93,
+    #61ffe5,
+    #45b157
+  );
   -webkit-background-clip: text;
   color: transparent;
-
 }
-h2{
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(to right bottom, #00b72b, #63ff93, #61ffe5, #45b157);
+h2 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: linear-gradient(
+    to right bottom,
+    #00b72b,
+    #63ff93,
+    #61ffe5,
+    #45b157
+  );
   -webkit-background-clip: text;
   color: transparent;
   width: fit-content;
@@ -109,24 +151,25 @@ h2{
 
 /* scroll-bar */
 ::-webkit-scrollbar {
-  width: 6px
+  width: 6px;
 }
 
 ::-webkit-scrollbar:horizontal {
-  height: 6px
+  height: 6px;
 }
 
-::-webkit-scrollbar-track,::-webkit-scrollbar-corner {
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
   /* background: #fff; */
-  border-radius: 10px
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #6d6d6d;
-  border-radius: 10px
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #b4b4b4;
-  cursor: pointer
+  cursor: pointer;
 }

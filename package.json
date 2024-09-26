@@ -15,7 +15,9 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.8",
     "@hello-pangea/dnd": "^17.0.0",
+    "classnames": "^2.5.1",
     "openai": "^4.63.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -24,6 +26,9 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@wxt-dev/module-react": "^1.1.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
     "typescript": "^5.5.4",
     "wxt": "^0.19.1"
   }

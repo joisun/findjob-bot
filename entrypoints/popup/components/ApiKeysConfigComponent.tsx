@@ -3,6 +3,8 @@ import { agentsStorage } from '@/utils/storage';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import React, { useState } from 'react';
 import styles from './ApiKeysConfigComponent.module.css';
+import HeadlingTitle from './common/HeadlingTitle';
+import Subtitle from './common/Subtitle';
 import { DragSvgIcon } from './icons/dragSvgIcon';
 import { RemoveSvgIcon } from './icons/RemoveSvgIcon';
 
@@ -90,8 +92,8 @@ const ApiKeysConfigComponent: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>API 管理</h2>
-            <p>选择 API 提供方，可进行拖拽排序，将优先使用最前的提供方</p>
+            <HeadlingTitle >API 管理</HeadlingTitle>
+            <Subtitle>选择 API 提供方，可进行拖拽排序，将优先使用最前的提供方</Subtitle>
             <p className={styles.operation}>
                 <select onChange={e => setSelectedAgent(Number(e.target.value))} value={selectedAgent || ''}>
                     <option value="" disabled>选择API提供方</option>

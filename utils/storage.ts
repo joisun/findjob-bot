@@ -1,6 +1,6 @@
 import { AiAgentApiKeys } from "@/typings/aiModelAdaptor";
 
-// utils/storage.ts
+/** 遍历索引缓存 */
 export const jobListItemIndex = storage.defineItem<number>(
     'local:jobListItemIndex',
     {
@@ -9,7 +9,7 @@ export const jobListItemIndex = storage.defineItem<number>(
 );
 
 
-// utils/storage.ts
+/** content 通信sender id缓存 */
 export const senderId = storage.defineItem<number>(
     'local:senderId',
     {
@@ -18,7 +18,7 @@ export const senderId = storage.defineItem<number>(
 );
 
 
-
+/** 简历内容缓存 */
 export const resumeCache = storage.defineItem<string>(
     'local:resumeCache',
     {
@@ -26,6 +26,7 @@ export const resumeCache = storage.defineItem<string>(
     },
 );
 
+/** 最大遍历次数 */
 export const loopLimitStorage = storage.defineItem<number>(
     'local:loopLimitStorage',
     {
@@ -33,6 +34,7 @@ export const loopLimitStorage = storage.defineItem<number>(
     },
 );
 
+/** 追加 Prompt */
 export const additionalPrompt = storage.defineItem<string>(
     'local:additionalPrompt',
     {
@@ -40,7 +42,7 @@ export const additionalPrompt = storage.defineItem<string>(
     },
 );
 
-
+/** 招呼语字数 */
 export const greetingWordsLimit = storage.defineItem<number>(
     'local:greetingWordsLimit',
     {
@@ -49,12 +51,29 @@ export const greetingWordsLimit = storage.defineItem<number>(
 );
 
 
-
+/** apikey 设定缓存 */
 export const agentsStorage = storage.defineItem<AiAgentApiKeys>(
     'local:agents',
     {
         fallback: [],
     },
 );
+
+/** 通过黑名单过滤外包公司 */
+export const filterOutsourcingCompany = storage.defineItem<boolean>(
+    'local:filterOutsourcingCompany',
+    {
+        fallback: true,
+    },
+);
+
+/** 过滤猎头 */
+export const filterHeadhunting = storage.defineItem<boolean>(
+    'local:filterHeadhunting',
+    {
+        fallback: true,
+    },
+);
+
 
 

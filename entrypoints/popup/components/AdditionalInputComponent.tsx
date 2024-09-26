@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import styles from './AdditionalInputComponent .module.css';
 import { additionalPrompt } from '@/utils/storage';
+import HeadlingTitle from './common/HeadlingTitle';
 
 const TextInputComponent = () => {
   const [text, setText] = useState('');
@@ -26,17 +26,15 @@ const TextInputComponent = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>追加 Prompt</h2>
-
+    <div className='relative'>
+      <HeadlingTitle >追加 Prompt</HeadlingTitle>
       <textarea
-        className={styles.textarea}
         value={text}
         onChange={handleInputChange}
         placeholder="追加更多的限制词，例如： 不考虑 go, java 等后端岗位 | 不考虑web3, 区块链相关岗位 | 不考虑如技术咨询，技术支持等外包岗位"
       />
-      <div className={styles.charCount}>
-        {charCount ?? 0}/{maxChars} characters
+      <div className="absolute right-2 bottom-0 mt-2 mb-2 text-xs text-green-400">
+        {charCount ?? 0} / {maxChars}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { log } from "@/utils/app";
 import { sleep } from "@/utils/common";
-import { getJobBaseInfo, getJobDescription, getConcatBtn, fillInputField, goTo } from "@/utils/domRelated";
+import { getJobBaseInfo, getJobDescription, getConcatBtn, fillInputField, checkUsedToContacted, goTo } from "@/utils/domRelated";
 
 export default defineContentScript({
   matches: ['*://*.zhipin.com/*'],
@@ -25,9 +25,6 @@ export default defineContentScript({
         case 'selectJobFromList':
           return await selectJobFromList(message.data)
 
-        case 'checkLocation':
-          return await checkLocation()
-
         case 'getJobBaseInfo':
           const jobBaseInfo = await getJobBaseInfo()
           return Promise.resolve(jobBaseInfo)
@@ -40,6 +37,10 @@ export default defineContentScript({
           const concatBtn = await getConcatBtn()
           concatBtn?.click()
           return Promise.resolve()
+
+        case 'checkUsedToContacted':
+          return Promise.resolve(checkUsedToContacted())
+
         case 'fillInputField':
           return await fillInputField(message.data)
         case 'goBack':
@@ -51,21 +52,12 @@ export default defineContentScript({
       }
     });
 
-
-
-
-
-
-
-
     // let jobListItemIndex = 0;
     // goTo("https://www.zhipin.com/web/geek/job-recommend")
     // inConcatPage()
   },
 });
-async function checkLocation() {
 
-}
 
 async function clickPreference() {
   // preference 列表是动态插入的，这里等待执行
@@ -90,7 +82,7 @@ async function selectJobFromList(index: number) {
     // 如果容器存在，进行滚动
     if (container) {
       // 模拟滚动到底部
-      window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 
       // 等待下一次加载
       await new Promise(resolve => setTimeout(resolve, 1000)); // 根据实际情况调整时间

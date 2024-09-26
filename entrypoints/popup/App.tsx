@@ -7,8 +7,10 @@ import GreetingWordsLimitComponent from './components/GreetingWordsLimitComponen
 import LogDisplayComponent from './components/LogDisplayComponent';
 import LoopLimitComponent from './components/LoopLimitComponent';
 import ResumeInputComponent from "./components/ResumeInputComponent";
+import FilterOutsourcingCompComponent from './components/FilterOutsourcingCompComponent'
 import TabSwitcher, { Tabs } from './components/TabSwitcher';
 import wxtLogo from '/findjob-bot.svg';
+import FilterHeadhuntingComponent from "./components/FilterHeadhuntingComponent";
 function App() {
 
   const [tab, setTab] = useState(Tabs.main)
@@ -44,13 +46,13 @@ function App() {
   }
   return (
     <div id='root-container'>
-      <h1><span className='flex-center'><img className='logo' src={wxtLogo} alt="" /> Findjob-bot</span>
+      <h1 className="mb-2"><span className='flex-center font-bold select-none'><img className='logo' src={wxtLogo} alt="" /> Findjob-bot</span>
         <div className='flex-center'>
           <LoopLimitComponent />
-          <button className='go-btn' onClick={handleClickStart}>
+          <button className='go-btn text-white hover:border-[#63ff93] relative font-bold bg-[#1cff1c28] border border-[#00ff3c] overflow-hidden' onClick={handleClickStart}>
             Go!!!
           </button>
-          <button className='stop-btn' onClick={handleClickStop}>
+          <button className='stop-btn text-red-500' onClick={handleClickStop}>
             Stop
           </button>
           {/* <button className='stop-btn' onClick={handleClickTest}>
@@ -71,6 +73,8 @@ function App() {
         <div style={{ display: tab === Tabs.settings ? 'block' : 'none' }}>
           <AdditionalInputComponent />
           <GreetingWordsLimitComponent />
+          <FilterOutsourcingCompComponent/>
+          {/* <FilterHeadhuntingComponent/> */}
           <ApiKeysConfigComponent />
         </div>
 

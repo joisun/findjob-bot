@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './LogDisplayComponent.module.css';
 import { LoggerType } from '@/typings/app';
+import HeadlingTitle from './common/HeadlingTitle';
 
 const LogDisplayComponent = () => {
   const [logs, setLogs] = useState<{ message: string, type: LoggerType }[]>([]);
@@ -28,7 +29,7 @@ const LogDisplayComponent = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Logs</h2>
+      <HeadlingTitle >Logs</HeadlingTitle>
       <div className={styles.logContainer} ref={logContainerRef}>
         {logs.map((log, index) => (
           <div key={index} className={`${styles.logEntry} ${styles[log.type]}`} >

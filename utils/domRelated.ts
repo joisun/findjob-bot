@@ -132,10 +132,13 @@ export async function getConcatBtn() {
 }
 
 
+export async function checkUsedToContacted() {
+  const checkIfcontacted = document.querySelector(".item-myself") as HTMLElement | null
+  return checkIfcontacted ? true : false
+}
+
 export async function fillInputField(textContent: string) {
   const inputTextField = await waitForElement(".chat-input") as HTMLElement | null
-  const checkIfcontacted = document.querySelector(".item-myself") as HTMLElement | null
-  if (checkIfcontacted) { log("已存在历史沟通， 跳过....", 'warn'); return }
   if (!inputTextField) { log("定位输入框失败!"); return }
   inputTextField.focus()
   inputTextField.innerText = textContent
@@ -157,7 +160,7 @@ export async function fillInputField(textContent: string) {
 }
 
 
-export async function fetchCompanyInfo(jobDetailUrl: string):Promise<{companyInfo: string, jonLocation: string}> {
+export async function fetchCompanyInfo(jobDetailUrl: string): Promise<{ companyInfo: string, jobLocation: string }> {
   return new Promise((resolve, reject) => {
     fetch(jobDetailUrl) // 替换为目标 URL
       .then(response => {
@@ -172,9 +175,11 @@ export async function fetchCompanyInfo(jobDetailUrl: string):Promise<{companyInf
         // 解析 HTML 字符串为 Document 对象
         const doc = parser.parseFromString(html, 'text/html');
         // 现在可以操作 doc，获取 DOM 元素
-        const companyInfo = doc && doc.querySelector('.job-detail-company .job-sec-text')?.textContent || '';
-        const jonLocation = doc && doc.querySelector('.job-location .location-address')?.textContent || '';
-        resolve({ companyInfo, jonLocation });
+        let companyInfo = doc && doc.querySelector('.job-detail-company .job-sec-text')?.textContent || '';
+        const jobLocation = doc && doc.querySelector('.job-location .location-address')?.textContent || '';
+        const jobAdditionInfo = doc && Array.from(doc.querySelector(".sider-company")?.querySelectorAll('p:not(.title)') || []).reduce((pre, cur) => { return pre + cur.textContent + '  ' }, "")
+        companyInfo += `\n公司上市情况，人数规模, 行业信息：\n${jobAdditionInfo}`
+        resolve({ companyInfo, jobLocation });
       })
       .catch(error => {
         reject(`获取公司信息和工作地点失败: ${error}`);

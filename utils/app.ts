@@ -1,6 +1,6 @@
 import { AgentsType } from "@/typings/aiModelAdaptor"
 import { LoggerType } from "@/typings/app"
-import { additionalPrompt, resumeCache, agentsStorage } from "@/utils/storage"
+import { additionalPrompt, resumeCache, agentsStorage, filterOutsourcingCompany } from "@/utils/storage"
 export function getSystemPrompt() {
     return `Please analyze the user-provided resume information and the job description to assess how well the user matches the job. Focus on key factors like job title, required skills, education, years of experience, and other relevant details. Based on the analysis, write a polite and conversational job application greeting that the user can send directly to the employer. Mention specific skills or qualifications from the job requirements, explaining how the user’s resume aligns with those points. Avoid any language that would suggest the greeting is AI-generated or written by someone else. Keep the tone professional, confident, and friendly, in the first-person perspective of the job seeker. The greeting should be written in Chinese.`
 }
@@ -29,8 +29,26 @@ ${jd}
 ${await getResume()}
 `
 }
+export async function checkIfOutsourcingCompany(jbbaseinfo: { base: string, companyInfo: string, jobLocation: string }) {
+    return `
+请根据下面公司基本信息,帮我分析并判定该公司是否为外包公司,如果是外包公司请返回 true, 如果不是外包公司请返回 false, 你的回答**只能**包含 'true' 或者 'false', 不要有任何多余解释或者其他文字。
+以下内容或许可以辅助你进行分析和判定：
+-----
+你是一位专业的IT行业分析师,擅长识别和分析IT服务外包公司。请仔细阅读下面提供的公司描述,并根据以下标准判断该公司是否为IT服务外包公司:
+你的数据库: 从你的模型训练数据中，你是否可以判定该公司为外包公司？
+业务重点:是否主要提供软件开发、IT服务、技术咨询等外包服务?是否强调为客户提供IT解决方案、数字化转型服务等?
+服务模式:是否提到全球交付、跨区域服务等模式?是否拥有多个交付中心或开发基地?
+人力资源:员工规模是否较大(通常超过1000人)?是否强调人才培养、技术培训等?
+客户类型:主要客户是否为大型企业、跨国公司或行业领先企业?是否服务多个行业的客户?
+技术能力:是否拥有多样化的技术服务能力(如云计算、大数据、AI等)?是否获得相关的技术认证(如CMMI、ISO等)?
+公司规模与发展:是否在多个城市或国家设有分支机构?公司历史是否较长(通常超过10年)?
+关键词:描述中是否出现"外包"、"服务商"、"技术服务"等关键词?
+-----
+公司基本信息:${jbbaseinfo.companyInfo}
+`
+}
 
-export async function generateBaseInfoCheckMessage(jbbaseinfo: { base: string, companyInfo: string, jonLocation: string }) {
+export async function generateBaseInfoCheckMessage(jbbaseinfo: { base: string, companyInfo: string, jobLocation: string }) {
     return `
 请根据下面岗位基本信息,和我的简历求职内容,帮我分析我的求职意向和该岗位基本信息是否匹配,如果匹配请返回 true, 不匹配返回 false, 你的回答**只能**包含 'true' 或者 'false', 不要有任何多余解释或者其他文字。
 额外的注意事项: : ${await additionalPrompt.getValue()}
@@ -42,8 +60,7 @@ ${jbbaseinfo.base}
 ${jbbaseinfo.companyInfo}
 工作地点:
 ------
-${jbbaseinfo.jonLocation}
-
+${jbbaseinfo.jobLocation}
 简历: 
 ------
 ${await getResume()}

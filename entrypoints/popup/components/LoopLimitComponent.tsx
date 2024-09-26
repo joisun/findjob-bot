@@ -32,16 +32,16 @@ const LoopLimitComponent = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>循环</h2>
+        <div className="flex justify-start items-center flex-nowrap h-full gap">
+            <h2 className="text-xl font-semibold">循环</h2>
             <input
                 type='number'
                 value={text}
-                className={styles.textarea}
+                className="box-border w-[10ch] h-full px-4 py-2 mx-1 inline-block text-white text-base"
                 onChange={handleInputChange}
                 max='1000'
             />
-            <h2 className={styles.title}>次</h2>
+            <h2 className="text-xl font-semibold">次</h2>
         </div>
     );
 };

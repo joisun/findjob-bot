@@ -36,16 +36,8 @@
   border: 1px solid #ff0055;
 
 }
-.go-btn{
-  position: relative;
-  font-weight: 800;
-  background-color: #1cff1c28;
-  border: 1px solid #00ff3c;
-  overflow: hidden;
-}
-.go-btn:hover{
-  border: 1px solid #63ff93;
-}
+
+
 .go-btn::after{
   content: '';
   position: absolute;
@@ -76,10 +68,8 @@
 
 .card {
   /* padding: 2em; */
-  width: 600px;
+  width: 620px;
 }
 
-.read-the-docs {
-  color: #888;
-}
+
 
