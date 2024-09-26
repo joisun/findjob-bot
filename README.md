@@ -146,7 +146,7 @@ function initAiApiAdaptor() {
 
 然后输入 apikey, 就可以测试了：
 
-![image-20240925170709009](./README.assets/image-20240925170709009.png)
+![image-20240925170709009](./README.assets/image-202409251707090091.png)
 
 以 Chrome 为例你可以在 chrome://extensions/ 
 
