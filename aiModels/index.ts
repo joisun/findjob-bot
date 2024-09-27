@@ -2,6 +2,7 @@ import { AgentsType } from "@/typings/aiModelAdaptor";
 import { API_ERROR_TYPE, RequestFn } from "@/typings/app";
 import { APIException } from "@/utils/APIException";
 import { log } from "@/utils/app";
+import { greetingWordsLimit } from "@/utils/storage";
 
 
 export async function chatComplete(message: string) {
@@ -44,7 +45,8 @@ export class AiApiBasic implements AIModelInterface {
                     apikey: apiKey,
                     apiUrl: this.apiUrl,
                     model: model,
-                    userMessage: input
+                    userMessage: input,
+                    maxTokens: await greetingWordsLimit.getValue()
                 });
                 return Promise.resolve(response);
             } catch (error) {
@@ -101,7 +103,7 @@ export class AiApiAdaptor {
                 }
                 // 收集需要移除的 service
                 this.toRemoveServices.push(service);
-                console.log('error',error)
+                console.log('error', error)
                 continue;  // 尝试下一个服务
             }
 

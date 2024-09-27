@@ -10,7 +10,7 @@ import { getSystemPrompt } from "@/utils/app";
 import { AiApiBasic } from ".";
 
 
-const chatanywhereAPI: RequestFn = function ({ apikey, apiUrl, model, userMessage }) {
+const chatanywhereAPI: RequestFn = function ({ apikey, apiUrl, model, userMessage, maxTokens }) {
     return new Promise((resolve, reject) => {
         const options = {
             method: 'POST',
@@ -21,6 +21,7 @@ const chatanywhereAPI: RequestFn = function ({ apikey, apiUrl, model, userMessag
             },
             body: JSON.stringify({
                 model: model,
+                max_tokens: maxTokens,
                 messages: [
                     {
                         role: "system",

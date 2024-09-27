@@ -5,7 +5,7 @@ import { AiApiBasic } from ".";
 // 不要用 spark-lite(general), 纯属智障！！
 
 
-const xunfeiSparkAPI: RequestFn = function ({ apikey, apiUrl, model, userMessage }) {
+const xunfeiSparkAPI: RequestFn = function ({ apikey, apiUrl, model, userMessage, maxTokens }) {
     return new Promise((resolve, reject) => {
         const options = {
             method: 'POST',
@@ -15,6 +15,7 @@ const xunfeiSparkAPI: RequestFn = function ({ apikey, apiUrl, model, userMessage
             },
             body: JSON.stringify({
                 model: model,
+                max_tokens: maxTokens,
                 messages: [
                     {
                         role: "system",
