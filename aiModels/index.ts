@@ -46,7 +46,7 @@ export class AiApiBasic implements AIModelInterface {
                     apiUrl: this.apiUrl,
                     model: model,
                     userMessage: input,
-                    maxTokens: await greetingWordsLimit.getValue()
+                    // maxTokens: await greetingWordsLimit.getValue() 
                 });
                 return Promise.resolve(response);
             } catch (error) {

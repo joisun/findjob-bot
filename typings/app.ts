@@ -24,7 +24,7 @@ export type APIParams = {
     apiUrl: string;
     model: string;
     userMessage: string;
-    maxTokens: number;
+    // maxTokens: number;// 会直接截断内容
 }
 // 定义函数类型接口
 export interface RequestFn {

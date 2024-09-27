@@ -2,24 +2,41 @@ import { AgentsType } from "@/typings/aiModelAdaptor"
 import { LoggerType } from "@/typings/app"
 import { additionalPrompt, resumeCache, agentsStorage, filterOutsourcingCompany } from "@/utils/storage"
 export function getSystemPrompt() {
-    return `Please analyze the user-provided resume information and the job description to assess how well the user matches the job. Focus on key factors like job title, required skills, education, years of experience, and other relevant details. Based on the analysis, write a polite and conversational job application greeting that the user can send directly to the employer. Mention specific skills or qualifications from the job requirements, explaining how the user’s resume aligns with those points. Avoid any language that would suggest the greeting is AI-generated or written by someone else. Keep the tone professional, confident, and friendly, in the first-person perspective of the job seeker. The greeting should be written in Chinese.`
+    return `
+You are an AI assistant designed to help users with various tasks related to job applications, company analysis, and resume assessment. Your task will vary based on the user's input, but it must always remain highly accurate, concise, and focused. Follow these guidelines for different tasks:
+
+1. **Job Application Greeting**: 
+   - If the user provides a resume and job description, assess how well the resume matches the job requirements. Write a polite and professional job application greeting in Chinese, mentioning relevant skills and qualifications. Ensure that the greeting is in the first-person perspective of the job seeker, and avoid suggesting that it was AI-generated. Avoid exaggerations and use a friendly yet professional tone. Ensure it is tailored to the job and the company..
+
+2. **Outsourcing Company Detection**: 
+   - If the user asks about whether a company is an outsourcing company, analyze the company information provided (such as services offered, scale, and industry focus). Respond with 'true' if the company is likely an outsourcing company, or 'false' otherwise. Do not provide any additional explanation.
+
+3. **Resume-Job Fit Analysis**:
+   - If the user provides job base information and requests an analysis of their resume's fit for the role, analyze both. Respond with 'true' if the resume matches the job requirements, or 'false' if it does not. No additional text should be included.
+
+For all responses, ensure clarity, conciseness, and relevance to the specific user query. The response should be only what is necessary for the user's request.
+`
 }
 export async function getResume() {
     return await resumeCache.getValue()
 }
 
 export async function generateInputMessage(jd: string) {
+    const wordsLimit = await greetingWordsLimit.getValue()
     return `
-请根据下面的岗位描述和我的简历,帮我写一个${await greetingWordsLimit.getValue()}字左右的求职招呼语,争取面试机会。如果不能胜任,直接返回字符串 'false'。你的回答中**只能**包含招呼语或 'false',不要有任何多余解释或其他文字。
+请根据下面的岗位描述和我的简历,帮我写一个${wordsLimit}字左右的求职招呼语,争取面试机会。如果不能胜任,直接返回字符串 'false'。你的回答中**只能**包含招呼语或 'false',不要有任何多余解释或其他文字。
 注意事项: 
 1.使用第一人称,撰写求职者向招聘公司发送的招呼语, 
-2.招呼语要专业的，用语自然,
-3.招呼语的语言是中文 
-4.招呼语中避免使用精通相关词汇
-5.招呼语是用于求职的，所以应该在保证我能胜任该工作的前提下，尽量和岗位描述相符合
-6.重要的,避免像信件那样太过正式化，书面化的格式和用词。避免出现“尊敬的xxx”, “祝好”, “敬礼”等书面用语。
-7.最重要的,招呼语中不要出现任何让人容易察觉到是AI 创作,或者是由他人代写的内容。
-8.${await additionalPrompt.getValue()}
+2.招呼语要专业且自然, 避免使用书面化的词汇，例如 "我是一名专业人士" 等等
+3.招呼语的语言是中文,
+4.招呼语中避免使用"精通"相关词汇,避免夸大技能或过分包装, 同时要尽可能的结合我的简历信息总结我符合岗位描述的优势去争取面试机会,
+5.招呼语用于求职，确保在我胜任工作的前提下，与岗位要求相符，避免虚构信息,
+6.避免使用空泛的套话，突出我与岗位的匹配性，保持简洁和真诚还有基本的礼貌
+7.招呼语应突出我独特的优势，确保针对岗位和公司量身定制，避免使用任何固定的模板化语句,避免泛泛而谈
+8.重要的,避免像信件那样太过正式化,书面化的格式和用词。避免出现“尊敬的xxx”, “祝好”, “敬礼”等书面用语。
+9.最重要的,招呼语中不要出现任何让人容易察觉到是AI 创作,或者是由他人代写的内容。
+10.最后，特别注意：${await additionalPrompt.getValue()}
+11.再次强调，字数应该在 ${wordsLimit} 以内。
 岗位描述: 
 -------
 ${jd}
