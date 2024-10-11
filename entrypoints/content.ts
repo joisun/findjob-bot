@@ -71,7 +71,7 @@ async function clickPreference() {
 }
 
 async function selectJobFromList(index: number) {
-  const selector = `.rec-job-list > li:nth-child(${index})`;
+  const selector = `.rec-job-list > div:nth-child(${index})`;
   let jobItem = document.querySelector(selector) as HTMLLIElement
 
   // 等待列表项存在
@@ -95,7 +95,8 @@ async function selectJobFromList(index: number) {
   // 如果找到了目标项，选择它
   if (jobItem) {
     jobItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    jobItem.click(); // 如果需要点击选中
+    const liEl = jobItem.firstElementChild as HTMLElement | null;
+    liEl && liEl.click(); // 如果需要点击选中
     return jobItem.querySelector('.company-location')?.textContent
 
   }

@@ -142,7 +142,7 @@ async function zhipin(senderId?: number) {
         const msgOrFalse = await generateHelloMessage(jobDescription)
         if (!msgOrFalse) { log('不符合职位描述！为你找下一个招聘信息~', 'warn'); continue }
         log(msgOrFalse)
-        // await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: msgOrFalse });
+        await browser.tabs.sendMessage(senderId, { from: 'background', type: "fillInputField", data: msgOrFalse });
         await sleep(2000)
       }
 
